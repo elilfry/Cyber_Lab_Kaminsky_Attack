@@ -31,3 +31,5 @@ with open("ip_resp.bin", "wb") as f:
     f.write(bytes(response))
     response.show()
 
+send(response) 
+

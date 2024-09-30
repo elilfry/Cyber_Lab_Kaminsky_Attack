@@ -25,3 +25,4 @@ with open("ip_req.bin", "wb") as f:
     f.write(bytes(request))
     request.show()
 
+send(request)  # Send the DNS request for checking
